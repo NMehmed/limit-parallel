@@ -26,6 +26,7 @@ const limitParallel = (tasks, limit) => {
 
       if (tasks.length > 0) {
         const nextTask = tasks.shift()
+
         try {
           await nextTask()
 
