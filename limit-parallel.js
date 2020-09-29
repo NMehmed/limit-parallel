@@ -17,25 +17,28 @@ const limitParallel = (tasks, limit) => {
     let tasksToFinish = tasks.length
     limit = tasks.length > limit ? limit : tasks.length
 
-    const taskRunner = (isInitial = false, error) => {
-      if (isInitial) {
-        for (let i = 0; i < limit; i++) {
-          tasks.shift()().then(() => taskRunner()).catch(err => taskRunner(false, err))
-        }
-      } else {
-        tasksToFinish--
-
-        if (tasks.length > 0) {
-          tasks.shift()().then(() => taskRunner()).catch(err => taskRunner(false, err))
-        }
-
-        if (error) console.log(error)
-
-        if (tasksToFinish === 0) return resolve()
-      }
+    for (let i = 0; i < limit; i++) {
+      tasks.shift()().then(() => taskRunner()).catch(err => taskRunner(err))
     }
 
-    taskRunner(true)
+    const taskRunner = async error => {
+      tasksToFinish--
+
+      if (tasks.length > 0) {
+        const nextTask = tasks.shift()
+        try {
+          await nextTask()
+
+          taskRunner()
+        } catch (err) {
+          taskRunner(err)
+        }
+      }
+
+      if (error) console.log(error)
+
+      if (tasksToFinish === 0) return resolve()
+    }
   })
 }
 
