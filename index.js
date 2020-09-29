@@ -4,7 +4,7 @@ const makeRequest = obj => {
     setTimeout(() => {
       console.log(obj.id)
       resolve()
-    }, 500)
+    }, 5000)
   })
 }
 
