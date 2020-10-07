@@ -1,9 +1,13 @@
 const arrOfPromises = []
 const makeRequest = obj => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
       console.log(obj.id)
-      resolve()
+      if (obj.id % 10 === 0) {
+        reject(`FAIL ${obj.id}`)
+      } else {
+        resolve()
+      }
     }, 5000)
   })
 }
@@ -24,6 +28,8 @@ const limitParallel = (tasks, limit) => {
     const taskRunner = async error => {
       tasksToFinish--
 
+      if (error) console.log(error)
+
       if (tasks.length > 0) {
         const nextTask = tasks.shift()
 
@@ -35,8 +41,6 @@ const limitParallel = (tasks, limit) => {
           taskRunner(err)
         }
       }
-
-      if (error) console.log(error)
 
       if (tasksToFinish === 0) return resolve()
     }
